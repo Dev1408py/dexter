@@ -35,6 +35,7 @@ function Login() {
 
       // create an object of the data that is passed in the login page
       let data = { username, password };
+      console.log(data);
 
       // calling the loginUser function which is present in services folder in authServices file
       const response = await AuthServices.loginUser(data);

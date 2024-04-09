@@ -6,15 +6,18 @@ import axios from 'axios';
 
 // specifying our backend server URL
 // const SERVER_URL = 'http://localhost:5000/api'
-const SERVER_URL = 'https://todoappbackend-itdg.onrender.com/api'
+// const SERVER_URL = 'https://todoappbackend-itdg.onrender.com/api'
+const SERVER_URL = 'http://localhost:3000'
 
 // function to register the user in the backend, i.e., database -> this function will call the backend to register the user
 const registerUser = (data) => {
+    // console.log(data);
     return axios.post(SERVER_URL + '/register', data);
 }
 
 // function to login the user in the backend, i.e., database -> this function will call the backend to login the user
 const loginUser = (data) => {
+    // console.log(data);
     return axios.post(SERVER_URL + '/login', data);
 }
 

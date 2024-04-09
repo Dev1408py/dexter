@@ -1,4 +1,5 @@
 export function getErrorMessage (error) {
-    const msg = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+    let msg = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+    msg += ". Please refresh the page.";
     return msg;
 }

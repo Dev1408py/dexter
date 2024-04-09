@@ -74,7 +74,9 @@ function Navbar({active}) {
                   <img src={avatar} alt='.'/>
                   <span>
                     {
-                      user?.finalData?.firstName ? `Hello, ${user?.finalData?.firstName} ${user?.finalData?.lastName}` : `Hello, ${user?.finalData?.username}`
+                      // user?.finalData?.firstName ? `Hello, ${user?.finalData?.firstName} ${user?.finalData?.lastName}` : `Hello, ${user?.finalData?.username}`
+                      user?.firstName ? `Hello, ${user?.firstName} ${user?.lastName}` : `Hello, ${user?.username}`
+
                     }
                   </span>
                 </div>
