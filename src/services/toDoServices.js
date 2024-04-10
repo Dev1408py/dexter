@@ -69,7 +69,7 @@ export async function getAllToDo() {
         }
     } catch (error) {
         // Handling API call errors
-        console.error('Error fetching todo tasks:', error);
+        // console.error('Error fetching todo tasks:', error);
         return null;
     }
 }

@@ -8,7 +8,7 @@ import { getTodoDetails, getUserDetails } from '../../util/GetUser';
 import ToDoServices from '../../services/toDoServices';
 import { useNavigate } from 'react-router';
 
-import axios from 'axios';
+import axios, { all } from 'axios';
 
 import { CheckCircleFilled, CheckCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
@@ -75,7 +75,6 @@ function ToDoList() {
 
       // getAllToDo();
 
-
       console.log('Todo tasks:', todoData);
       localStorage.setItem('todos', JSON.stringify(todoData));
 
@@ -85,7 +84,7 @@ function ToDoList() {
       setAllToDo(todoData);
 
     } catch (error) {
-      console.error('Error fetching todo tasks:', error);
+      // console.error('Error fetching todo tasks:', error);
       // Implement error handling (e.g., display user-friendly error message)
     } finally {
       setLoading(false);
@@ -99,12 +98,6 @@ function ToDoList() {
     }
   }, [getallToDos, user?.username]);
 
-  // Polling for data updates
-  // useEffect(() => {
-  //   const timerId = setInterval(getallToDos, POLLING_INTERVAL);
-
-  //   return () => clearInterval(timerId); // Cleanup function to clear the interval on unmount
-  // }, [getallToDos]); // Only run when getallToDos changes (avoid unnecessary re-runs)
 
   // const getallToDos = useCallback(async () => {
   //   setLoading(true);
@@ -457,6 +450,7 @@ function ToDoList() {
   // }, [allToDo, currentTaskType])
 
   useEffect(() => {
+      
       const incomplete = allToDo?.todos?.filter((item) => item.isCompleted == false);
       console.log('incomplete', incomplete);
       const complete = allToDo?.todos?.filter((item) => item.isCompleted == true);
@@ -471,7 +465,7 @@ function ToDoList() {
       } else {
         tasksToSend = complete;
       }
-      console.log(tasksToSend);
+      console.log('complete /incomplete task',tasksToSend);
       setCurrentToDoTask(tasksToSend);
 
       
@@ -493,48 +487,6 @@ function ToDoList() {
     let finalDate = `${dateString} at ${hh}:${min}:${ss}`;
     return finalDate;
   }
-
-  // // when the user clicks on ok button on the modal
-  // // this function is called, and specified tasks will run
-  // const handleSubmitTask = async() => {
-  //   // step 1 -> set loading to true
-  //   setLoading(true);
-
-  //   try {
-  //     // step 2 -> fetching user id from the local storage
-  //     const userId = getUserDetails()?.username;
-
-  //     // step 3 -> fetching the data of the task
-  //     const data = { title, description, isCompleted: false, createdBy: userId };
-      
-  //     // step 4 -> send the data to the backend service
-  //     await ToDoServices.createToDo(data);
-  //     // const response = await ToDoServices.createToDo(data);
-
-  //     // printing the response
-  //     // console.log(response.data);
-
-  //     // step 5 -> after receiving the response successfully, set loading to false
-  //     setLoading(false);
-
-  //     // step 6 -> send the success message in response
-  //     message.success("Task Added Successfully!");
-
-  //     // step 7 -> after added the task successfully, we close the modal
-  //     setIsAdding(false);
-
-  //     // step 8 -> after adding the task, we again call the getAllToDo() function
-  //     // and show the user so that he can see his updated todo tasks
-  //     getAllToDo();
-  //   }
-  //   catch(err) {
-  //     // console.log(err);
-
-  //     // if there is any error then also set loading to false
-  //     setLoading(false);
-  //     message.error(getErrorMessage(err));
-  //   }
-  // }
 
   // this function will run when the user clicks on the edit icon of the specific task
   const handleEdit = (item) =>{
@@ -569,9 +521,6 @@ function ToDoList() {
     //   // Handle the case where the item to edit is not found
     // }
     
-
-
-
     // // setCurrentEditItem(editItem);
 
 
@@ -674,19 +623,86 @@ const handleDelete = async (itemId) => {
   // on every task we have the icon which shows that the task is completed or not
   // so if the task is not completed and user clicks on the task, the task will be marked as completed and vice versa
   // this function will be called when user clicks on that icon
-  const handleUpdateStatus = async(id, status) => {
+  // const handleUpdateStatus = async(id, status) => {
+  //   try {
+  //     // const response = await ToDoServices.updateToDo(id, {isCompleted: status});
+  //     // console.log(response.data);
+  //     await ToDoServices.updateToDo(id, {isCompleted: status});
+  //     message.success("Task Status Updated Successfully!");
+  //     localStorage.setItem('todo tasksss is completed?', JSON.stringify(status));
+
+      
+  //     getAllToDo();
+      
+  //   }
+  //   catch(err) {
+  //     // console.log(err);
+  //     message.error(getErrorMessage(err));
+  //   }
+  // }
+//////working both 
+  // const handleUpdateStatus = async (id, status) => {
+  //   try {
+  //     const data = {
+  //       "isCompleted": status
+  //     };
+
+  //     // const response = await ToDoServices.updateToDo(id, { isCompleted: status });
+  //     const response = await ToDoServices.updateToDo(id , data);
+
+  //     if (response.status === 200) { // Handle successful backend update
+  //       console.log('Task status updated successfully on the backend.');
+  //       message.success("Task Status Updated Successfully!");
+  //       localStorage.setItem('todo tasksss is completed?', JSON.stringify(status));
+  //     } else {
+  //       console.error('Error updating task on the backend:', response.statusText);
+  //       message.error("Failed to update task status. Please try again.");
+  //     }
+  //   } catch (err) {
+  //     console.error('Error updating task:', err);
+  //     message.error("An error occurred while updating the task. Please try again.");
+  //   }
+  // };
+
+
+  const handleUpdateStatus = async (id, status) => {
     try {
-      // const response = await ToDoServices.updateToDo(id, {isCompleted: status});
-      // console.log(response.data);
-      await ToDoServices.updateToDo(id, {isCompleted: status});
-      message.success("Task Status Updated Successfully!");
-      getAllToDo();
+      console.log('id',id);
+      const data = { isCompleted: status };
+
+      // Call the backend API to update the task status
+      // const response = await ToDoServices.updateToDo(id, data);
+      const response = await axios.patch(SERVER_URL + '/update-completed/' + id, data, authHeaders());
+
+      console.log('response: status ',response)
+  
+      if (response.status === 200) {
+        message.success("Task Status Updated Successfully!");
+  
+        // Update the task status in local storage
+        const updatedTodos = allToDo.todos.map(todo => {
+          if (todo.id || todo._id === id) {
+            return { ...todo, isCompleted: status };
+          }
+          return todo;
+        });
+  
+        setAllToDo({ ...allToDo, todos: updatedTodos });
+      } else {
+        console.error('Error updating task on the backend:', response.statusText);
+
+        message.error("Failed to update task status. Please try again.");
+      }
+    } catch (err) {
+      console.error('Error updating task:', err);
+      message.error("An error occurred while updating the task. Please try again.");
     }
-    catch(err) {
-      // console.log(err);
-      message.error(getErrorMessage(err));
-    }
-  }
+  };
+  
+
+
+
+
 
   // when the user clicks on the ok button on update task modal
   // then this function will executed
@@ -697,11 +713,20 @@ const handleDelete = async (itemId) => {
       const data = {
         title: updatedTitle,
         description: updatedDescription,
+        // isCompleted: updatedStatus
+      };
+      const data1 = {
         isCompleted: updatedStatus
       };
 
+      console.log('currentEditItem?.id',currentEditItem?._id);
+    
 
-      
+      const response = await axios.patch(SERVER_URL + '/update-completed/' + currentEditItem?._id, data1, authHeaders());
+      console.log('response of iscompleted',response);
+
+
+
       // here we call the backend API to update the task and we are passing the current items id and the updated data
       // const response = await ToDoServices.updateToDo(currentEditItem?._id, data);
       // console.log(response.data);
@@ -713,11 +738,33 @@ const handleDelete = async (itemId) => {
         }
         return todo;
       });
-  
+
+      
+      
+
+      // localStorage.setItem('todoswww', updatedTodos?.todos);
+      // localStorage.setItem('setall', { ...allToDo, todos: updatedTodos });
+
       setAllToDo({ ...allToDo, todos: updatedTodos });
+
+      // try {
+      //   localStorage.setItem(
+      //     'todossssssasassdjbdssd',
+      //     JSON.stringify({
+      //       todos: [...allToDo.todos], // Use updated state
+      //     })
+      //   );
+      //   console.log('Task updated in localStorage successfully.');
+      // } catch (err) {
+      //   console.error('Error saving to localStorage:', err);
+      //   // Handle localStorage update error (optional)
+      // }
 
       // showing the success message to the user that the task is updated
       message.success(`${currentEditItem?.title} Updated Successfully!`);
+
+    
+    
 
       setLoading(false);
 
@@ -729,11 +776,12 @@ const handleDelete = async (itemId) => {
       getAllToDo();
     }
     catch(err) {
-      // console.log(err);
+      console.log(err);
       setLoading(false);
       message.error(getErrorMessage(err));
     }
   }
+
 
   const handleTypeChange = (value) => {
     const todoDataJSON = localStorage.getItem('todoTasks');
@@ -748,7 +796,7 @@ const handleDelete = async (itemId) => {
     // console.log('value,' ,value);
     setCurrentTaskType(value);
 
-    if(value === 'incomplete') {
+    if(value == 'incomplete') {
       // setCurrentToDoTask(incompletedTodo);
       setCurrentToDoTask(todoData?.todos.filter((todo) => !todo.isCompleted));
 
@@ -883,15 +931,20 @@ const handleDelete = async (itemId) => {
                       {
                         item?.isCompleted 
                         ? 
-                          <Tooltip title="Mark as Incomplete"><CheckCircleFilled onClick={()=>handleUpdateStatus(item._id,false)} style={{color:'green'}}  className={styles.actionIcon} /></Tooltip> 
+
+                          <Tooltip title="Mark as Incomplete"><CheckCircleFilled onClick={()=>handleUpdateStatus(item.id || item._id, false)} style={{color:'green'}}  className={styles.actionIcon} /></Tooltip> 
                         :
-                        <Tooltip title="Mark as Completed"><CheckCircleOutlined onClick={()=>handleUpdateStatus(item._id,true)}  className={styles.actionIcon}/></Tooltip>
+                        <Tooltip title="Mark as Completed"><CheckCircleOutlined onClick={()=>handleUpdateStatus(item.id || item._id,true)}  className={styles.actionIcon}/></Tooltip>
+
                       }
                     </div>  
                   </div>
                 </div>
               )
             }) :  currentTodoTask?.length > 0 ? currentTodoTask?.map((item) => {
+              console.log('item?.isCompleted:', item?.isCompleted); // Log `isCompleted` status
+
+              console.log('currentTodoTask',currentTodoTask);
             // }):  (allToDo?.todos && allToDo?.todos.length > 0) ? allToDo?.todos.map((item) => {
 
               return (
@@ -941,9 +994,9 @@ const handleDelete = async (itemId) => {
                       {
                         item?.isCompleted 
                         ? 
-                          <Tooltip title="Mark as Incomplete"><CheckCircleFilled onClick={()=>handleUpdateStatus(item._id,false)} style={{color:'green'}}  className={styles.actionIcon} /></Tooltip> 
+                           <Tooltip title="Mark as Incomplete"><CheckCircleFilled onClick={()=>handleUpdateStatus(item.id || item._id,false)} style={{color:'green'}}  className={styles.actionIcon} /></Tooltip> 
                         :
-                        <Tooltip title="Mark as Completed"><CheckCircleOutlined onClick={()=>handleUpdateStatus(item._id,true)}  className={styles.actionIcon}/></Tooltip>
+                        <Tooltip title="Mark as Completed"><CheckCircleOutlined onClick={()=>handleUpdateStatus(item.id || item._id,true)}  className={styles.actionIcon}/></Tooltip>
                       }
                     </div>  
                   </div>
@@ -976,9 +1029,13 @@ const handleDelete = async (itemId) => {
             onChange={(value) => setUpdatedStatus(value)}
             value={updatedStatus}
             options={[
+              // {
+              //   value: false,
+              //   label: 'Not Completed',
+              // },
               {
                 value: false,
-                label: 'Not Completed',
+                label:'Incomplete'
               },
               {
                 value: true,
