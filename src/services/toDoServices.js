@@ -7,7 +7,9 @@ import { getUserDetails } from '../util/GetUser';
 
 // specifying our backend server URL
 // const SERVER_URL = 'http://localhost:5000/api/todo'
-const SERVER_URL = 'http://localhost:3002/api/todo'
+// const SERVER_URL = 'http://localhost:3000/api/todo'
+const SERVER_URL = 'https://application-92.1ehfynoexv7e.au-syd.codeengine.appdomain.cloud/api/todo'
+
 
 
 // const SERVER_URL = 'https://todoappbackend-itdg.onrender.com/api/todo'
@@ -57,7 +59,9 @@ export async function getAllToDo() {
         // Checking if user details exist and contain userId
         if (user.username) {
             // Making API call to fetch todo tasks for the user
-            const response = await axios.get(`http://localhost:3002/api/todo/all-to-do/${user.username}`);
+            // const response = await axios.get(`http://localhost:3000/api/todo/all-to-do/${user.username}`);
+            const response = await axios.get(`https://application-92.1ehfynoexv7e.au-syd.codeengine.appdomain.cloud/api/todoall-to-do/${user.username}`);
+
             // console.log('todoService', response.data.todos)
 
             // Returning the todo tasks data from the response

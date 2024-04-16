@@ -7,7 +7,9 @@ import axios from 'axios';
 // specifying our backend server URL
 // const SERVER_URL = 'http://localhost:5000/api'
 // const SERVER_URL = 'https://todoappbackend-itdg.onrender.com/api'
-const SERVER_URL = 'http://localhost:3000'
+// const SERVER_URL = 'http://localhost:3000'
+const SERVER_URL = 'https://application-92.1ehfynoexv7e.au-syd.codeengine.appdomain.cloud';
+
 
 // function to register the user in the backend, i.e., database -> this function will call the backend to register the user
 const registerUser = (data) => {

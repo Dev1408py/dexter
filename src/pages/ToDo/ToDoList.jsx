@@ -10,11 +10,11 @@ import { useNavigate } from 'react-router';
 
 import axios, { all } from 'axios';
 
-import { CheckCircleFilled, CheckCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, CheckCircleOutlined, DeleteOutlined, EditOutlined, AudioOutlined } from '@ant-design/icons';
 
-const SERVER_URL = 'http://localhost:3002/api/todo'; // Adjust the server URL
+// const SERVER_URL = 'http://localhost:3000/api/todo'; // Adjust the server URL
+const SERVER_URL = 'https://application-92.1ehfynoexv7e.au-syd.codeengine.appdomain.cloud/api/todo';
 // const POLLING_INTERVAL = 5000; // Adjust the refresh interval as needed (in milliseconds)
-
 
 
 function ToDoList() {
@@ -825,7 +825,35 @@ const handleDelete = async (itemId) => {
       setFilteredToDo([]);
     }
   };
+
+  async function convertToSpeech(description) {
+    try {
+      const url = 'https://api.eu-gb.text-to-speech.watson.cloud.ibm.com/instances/1d18079a-d950-452b-8d33-14ea822cf6e4';
+      const apiKey = 'rlxEkSI4rGuxlkGU4UqoGy22bfW3HUw_uF5ERuaZBIMo'; // Replace with your actual API key
   
+      const response = await fetch(`${url}/v1/synthesize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Basic ${btoa(`apikey:${apiKey}`)}`
+        },
+        body: JSON.stringify({
+          text: description,
+          voice: 'en-US_AllisonV3Voice', // Choose the voice (you can change this)
+          accept: 'audio/wav'
+        })
+      });
+  
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+  
+      // Play the synthesized speech
+      const audioElement = new Audio(audioUrl);
+      audioElement.play();
+    } catch (error) {
+      console.error('Error converting text to speech:', error);
+    }
+  }
   
 
 
@@ -921,6 +949,8 @@ const handleDelete = async (itemId) => {
                     
                     {/* this div shows edit task icon, delete task icon and complete incomplete task icon */}
                     <div className={styles.toDoFooterAction}>
+                    <Tooltip title="Audio of description" placement='bottom'><AudioOutlined style={{color:'red'}} className={styles.actionIcon} onClick={() => convertToSpeech(item?.description)} /></Tooltip>
+
                       {/* edit task icon */}
                       <Tooltip title="Edit Task" placement='bottom'><EditOutlined onClick={()=>handleEdit(item)} className={styles.actionIcon} /></Tooltip>
 
@@ -975,6 +1005,7 @@ const handleDelete = async (itemId) => {
                   
                   {/* this div shows date of the task, edit task icon, delete task icon, and complete incomplete task icon */}
                   <div className={styles.toDoCardFooter}>
+
                     {/* here we show the date at which the task is created */}
                     <Tag>
                       {
@@ -984,6 +1015,10 @@ const handleDelete = async (itemId) => {
                     
                     {/* this div shows edit task icon, delete task icon and complete incomplete task icon */}
                     <div className={styles.toDoFooterAction}>
+                    {/* {console.log('Is AudioOutlined rendered?', !!AudioOutlined)} */}
+
+                    <Tooltip title="Audio of description" placement='bottom'><AudioOutlined style={{color:'red'}} className={styles.actionIcon} onClick={() => convertToSpeech(item?.description)} /></Tooltip>
+
                       {/* edit task icon */}
                       <Tooltip title="Edit Task" placement='bottom'><EditOutlined onClick={()=>handleEdit(item)} className={styles.actionIcon} /></Tooltip>
 
